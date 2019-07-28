@@ -21,34 +21,40 @@ import java.util.LinkedHashMap;
 public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
 
     private enum featuresName {
-        Major_Brand,
-        Minor_Version,
-        Compatible_Brands,
-        Creation_Time,
-        Modification_Time,
-        Duration,
-        Media_Time_Scale,
-        Duration_in_Seconds,
-        Transformation_Matrix,
-        Preferred_Rate,
-        Preferred_Volume,
-        Next_Track_ID,
-        Rotation,
-        ISO_639_2_Language_Code,
-        Opcolor,
-        Graphics_Mode,
-        Compression_Type,
-        Width,
-        Height,
-        Compressor_Name,
-        Depth,
-        Horizontal_Resolution,
-        Vertical_Resolution,
-        Frame_Rate,
-        Detected_File_Type_Name,
-        Detected_File_Type_Long_Name,
-        Detected_MIME_Type,
-        Expected_File_Name_Extension,
+        MP4_Transformation_Matrix,
+        MP4_Rotation,
+        MP4_Preferred_Volume,
+        MP4_Preferred_Rate,
+        MP4_Next_Track_ID,
+        MP4_Modification_Time,
+        MP4_Minor_Version,
+        MP4_Media_Time_Scale,
+        MP4_Major_Brand,
+        MP4_Duration_in_Seconds,
+        MP4_Duration,
+        MP4_Creation_Time,
+        MP4_Compatible_Brands,
+        MP4_Video_Width,
+        MP4_Video_Vertical_Resolution,
+        MP4_Video_Opcolor,
+        MP4_Video_Modification_Time,
+        MP4_Video_ISO_639_2_Language_Code,
+        MP4_Video_Horizontal_Resolution,
+        MP4_Video_Height,
+        MP4_Video_Graphics_Mode,
+        MP4_Video_Frame_Rate,
+        MP4_Video_Depth,
+        MP4_Video_Creation_Time,
+        MP4_Video_Compressor_Name,
+        MP4_Video_Compression_Type,
+        MP4_Sound_Sample_Size,
+        MP4_Sound_Sample_Rate,
+        MP4_Sound_Number_of_Channels,
+        MP4_Sound_Modification_Time,
+        MP4_Sound_ISO_639_2_Language_Code,
+        MP4_Sound_Format,
+        MP4_Sound_Creation_Time,
+        MP4_Sound_Balance,
     } // list of the feature names
 
     public FeatureExtractorFixedFeaturesKnowledgeBasedMp4() {
@@ -90,14 +96,14 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
 
         for (Directory directory : metadata.getDirectories()) {
             for (Tag tag : directory.getTags()) {
-                String name = tag.getTagName().replace(" ","_").replace("-","_"); // temporary solution
+                String name = (directory.getName()+"_"+tag.getTagName()).replace(" ","_").replace("-","_"); // temporary solution
                 params.put(name, tag.getDescription());
             }
-            if (directory.hasErrors()) {
+/*            if (directory.hasErrors()) {
                 for (String error : directory.getErrors()) {
                     System.err.format("ERROR: %s", error);
                 }
-            }
+            }*/
         }
         return params;
     }
