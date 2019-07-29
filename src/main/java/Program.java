@@ -18,10 +18,9 @@ import java.util.stream.Stream;
 
 public class Program {
     public static void main(String[] args) throws IOException {
-        String path = "C:\\Users\\ttzaf\\Downloads\\סרטון רן צפריר Flybox Mobile qulity.mp4";
-        getURLs(path);
-
-
+        String path = "C:\\Users\\ttzaf\\Desktop\\Research\\benign\\bug.mp4";
+        ArrayList<String> linkArray = getURLs(path);
+        System.out.println(linkArray.size());
 
 /*        String folderDir = "C:\\Users\\ttzaf\\Desktop\\Jupiter N Projects\\Research\\benign samples"; // Source folder
         List<LinkedHashMap<String, String>> FeatureMapList = new ArrayList<>();
@@ -127,21 +126,23 @@ public class Program {
         }
         return null;
     }
-    private static void getURLs(String path) throws IOException {
+    private static ArrayList<String> getURLs(String path) throws IOException {
 
         String input = convertFileTosTRING(path);
         LinkExtractor linkExtractor = LinkExtractor.builder()
-                .linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW, LinkType.EMAIL))
+                .linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW))
                 .build();
         Iterable<LinkSpan> links = linkExtractor.extractLinks(input);
-        LinkSpan link = links.iterator().next();
-        link.getType();        // LinkType.URL
-        link.getBeginIndex();  // 17
-        link.getEndIndex();    // 32
-        String url = input.substring(link.getBeginIndex(), link.getEndIndex());
-        System.out.println(url);
 
+        ArrayList<String> linkArray = new ArrayList<>();
+        for(Span link :links) {
+            int start = link.getBeginIndex();
+            int end = link.getEndIndex();
+            String url = input.substring(start, end);
+            linkArray.add(url);
+        }
 
+        return linkArray;
     }
 
 
@@ -155,7 +156,7 @@ public class Program {
             }
         };
 
-        String text = byteSource.asCharSource(Charsets.US_ASCII).read();
+        String text = byteSource.asCharSource(Charsets.ISO_8859_1).read();
 
         System.out.println(text);
         return text;
