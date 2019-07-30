@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 public class Program {
     public static void main(String[] args) throws IOException {
         String path = "C:\\Users\\ttzaf\\Desktop\\Research\\benign\\bug.mp4";
-        ArrayList<String> linkArray = getURLs(path);
-        System.out.println(linkArray.size());
+        FeatureExtractorFixedFeaturesKnowledgeBasedMp4 test = new FeatureExtractorFixedFeaturesKnowledgeBasedMp4();
+        LinkedHashMap<String, String> FeatureMap = test.extractFeaturesFromSingleElement(path);
 
 /*        String folderDir = "C:\\Users\\ttzaf\\Desktop\\Jupiter N Projects\\Research\\benign samples"; // Source folder
         List<LinkedHashMap<String, String>> FeatureMapList = new ArrayList<>();
@@ -126,41 +126,7 @@ public class Program {
         }
         return null;
     }
-    private static ArrayList<String> getURLs(String path) throws IOException {
 
-        String input = convertFileTosTRING(path);
-        LinkExtractor linkExtractor = LinkExtractor.builder()
-                .linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW))
-                .build();
-        Iterable<LinkSpan> links = linkExtractor.extractLinks(input);
-
-        ArrayList<String> linkArray = new ArrayList<>();
-        for(Span link :links) {
-            int start = link.getBeginIndex();
-            int end = link.getEndIndex();
-            String url = input.substring(start, end);
-            linkArray.add(url);
-        }
-
-        return linkArray;
-    }
-
-
-    private static String convertFileTosTRING(String path) throws IOException {
-        InputStream inputStream = new FileInputStream(new File(path));
-
-        ByteSource byteSource = new ByteSource() {
-            @Override
-            public InputStream openStream() throws IOException {
-                return inputStream;
-            }
-        };
-
-        String text = byteSource.asCharSource(Charsets.ISO_8859_1).read();
-
-        System.out.println(text);
-        return text;
-    }
 
     }
 
