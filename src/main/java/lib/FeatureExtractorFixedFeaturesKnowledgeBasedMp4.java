@@ -1,15 +1,25 @@
 package lib;//package FeatureExtractors.FeatureExtractorsFixedFeatures.KnowledgeBased;
 
 import com.drew.imaging.ImageProcessingException;
+import com.drew.imaging.mp4.Mp4Handler;
 import com.drew.imaging.mp4.Mp4MetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+import com.drew.metadata.mp4.boxes.HandlerBox;
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteSource;
+import org.nibor.autolink.LinkExtractor;
+import org.nibor.autolink.LinkSpan;
+import org.nibor.autolink.LinkType;
+import org.nibor.autolink.Span;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -55,6 +65,7 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
         MP4_Sound_Format,
         MP4_Sound_Creation_Time,
         MP4_Sound_Balance,
+        Number_Of_Urls,
     } // list of the feature names
 
     public FeatureExtractorFixedFeaturesKnowledgeBasedMp4() {
@@ -64,7 +75,7 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
     public static LinkedHashMap<String, String> extractFeaturesFromSingleElement(String elementFilePath) throws IOException {
 
         LinkedHashMap<String, String> features = new LinkedHashMap<>();
-        HashMap<String, String> featuresHashMap = someFunction(elementFilePath);
+        HashMap<String, String> featuresHashMap = MetaDataExtractor(elementFilePath);
         //Set<String> hashKeySet = featuresHashMap.keySet();
         for (featuresName featureName : featuresName.values()) {
             //boolean containsKey = hashKeySet.contains(featureName.toString());
@@ -79,6 +90,12 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
 
         }
 
+        ArrayList<String> linkArray = getURLs(elementFilePath);
+        features.put("Number_Of_Urls",Integer.toString(linkArray.size()));
+
+        //System.out.println(features.toString());
+
+
 
 
         //features.put(featuresName.Duration.toString(), someFunction());
@@ -90,9 +107,10 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
     }
 
     //<editor-fold desc="Extractor Methods">
-    private static HashMap<String, String> someFunction(String elementFilePath) throws IOException {
+    private static HashMap<String, String> MetaDataExtractor(String elementFilePath) throws IOException {
         InputStream file = new FileInputStream(elementFilePath);
         Metadata metadata = Mp4MetadataReader.readMetadata(file);
+
         HashMap<String, String> params = new HashMap<>();
 
         for (Directory directory : metadata.getDirectories()) {
@@ -108,6 +126,44 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
         }
         return params;
     }
+
+    private static ArrayList<String> getURLs(String path) throws IOException {
+
+        String input = convertFileTosTRING(path);
+        LinkExtractor linkExtractor = LinkExtractor.builder()
+                .linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW))
+                .build();
+        Iterable<LinkSpan> links = linkExtractor.extractLinks(input);
+
+        ArrayList<String> linkArray = new ArrayList<>();
+        for(Span link :links) {
+            int start = link.getBeginIndex();
+            int end = link.getEndIndex();
+            String url = input.substring(start, end);
+            linkArray.add(url);
+        }
+
+        return linkArray;
+    }
+
+
+    private static String convertFileTosTRING(String path) throws IOException {
+        InputStream inputStream = new FileInputStream(new File(path));
+
+        ByteSource byteSource = new ByteSource() {
+            @Override
+            public InputStream openStream() throws IOException {
+                return inputStream;
+            }
+        };
+
+        String text = byteSource.asCharSource(Charsets.ISO_8859_1).read();
+
+        //System.out.println(text);
+        return text;
+    }
+
+
     //</editor-fold>
     //@Override
         public ArrayList<String> getFeaturesHeaders() {
