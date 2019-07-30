@@ -30,6 +30,8 @@ package com.axiosys.bento4;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 
 public class AtomList implements AtomParent {
     private final ArrayList atoms = new ArrayList();
@@ -78,6 +80,17 @@ public class AtomList implements AtomParent {
         }
 
         return bag;
+    }
+
+    public LinkedHashMap<String, Collection<Integer>> getAtomList() {
+        LinkedHashMap<String, Collection<Integer>> atomMap = new LinkedHashMap<>();
+
+        for (int i=0; i<atoms.size(); i++) {
+            Atom atom = (Atom)atoms.get(i);
+            atom.getAtomList(atomMap);
+        }
+
+        return atomMap;
     }
 
 }

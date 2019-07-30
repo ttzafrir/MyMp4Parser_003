@@ -32,6 +32,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 
 public abstract class Atom {
     public final static int TYPE_MOOV = 0x6d6f6f76;
@@ -156,7 +158,20 @@ public abstract class Atom {
 
     public void toStringType(ArrayList<StringBuffer> bag, StringBuffer s){ bag.add(s.append("/" + typeString(type)));
     }
-    
+
+    public void getAtomList(LinkedHashMap<String, Collection<Integer>> map){
+        if (map.containsKey(type)) {
+            String key = typeString(type);
+            Collection<Integer> v = map.get(key);
+            v.add(getSize());
+        } else {
+            String key = typeString(type);
+            Collection<Integer> col = new ArrayList<>();
+            map.put(key,col);
+            col.add(getSize());
+        }
+    }
+
     public String toString() {
         return toString("");
     }

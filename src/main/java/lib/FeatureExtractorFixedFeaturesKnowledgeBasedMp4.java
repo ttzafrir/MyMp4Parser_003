@@ -1,12 +1,11 @@
 package lib;//package FeatureExtractors.FeatureExtractorsFixedFeatures.KnowledgeBased;
 
-import com.drew.imaging.ImageProcessingException;
-import com.drew.imaging.mp4.Mp4Handler;
+import com.axiosys.bento4.AtomList;
+import com.axiosys.bento4.InvalidFormatException;
 import com.drew.imaging.mp4.Mp4MetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
-import com.drew.metadata.mp4.boxes.HandlerBox;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteSource;
 import org.nibor.autolink.LinkExtractor;
@@ -18,10 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 //import FeatureExtractors.AFeatureExtractor;
 //import FeatureExtractors.FeatureExtractorsFixedFeatures.AFeatureExtractorFixedFeatures;
@@ -31,6 +27,7 @@ import java.util.LinkedHashMap;
 public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
 
     private enum featuresName {
+        file_size,
         MP4_Transformation_Matrix,
         MP4_Rotation,
         MP4_Preferred_Volume,
@@ -66,13 +63,57 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
         MP4_Sound_Creation_Time,
         MP4_Sound_Balance,
         Number_Of_Urls,
+        alb_size,
+        ART_size,
+        cmt_size,
+        day_size,
+        nam_size,
+        too_size,
+        wrt_size,
+        covr_size,
+        ctts_size,
+        data_size,
+        desc_size,
+        dinf_size,
+        dref_size,
+        edts_size,
+        elst_size,
+        free_size,
+        ftyp_size,
+        hdlr_size,
+        ilst_size,
+        iods_size,
+        mdat_size,
+        mdhd_size,
+        mdia_size,
+        meta_size,
+        minf_size,
+        moov_size,
+        mvhd_size,
+        nled_size,
+        nmhd_size,
+        sbgp_size,
+        sdtp_size,
+        sgpd_size,
+        smhd_size,
+        stbl_size,
+        stco_size,
+        stsc_size,
+        stsd_size,
+        stss_size,
+        stsz_size,
+        stts_size,
+        tkhd_size,
+        trak_size,
+        udta_size,
+        vmhd_size,
     } // list of the feature names
 
     public FeatureExtractorFixedFeaturesKnowledgeBasedMp4() {
     } // Empty constructor
 
 
-    public static LinkedHashMap<String, String> extractFeaturesFromSingleElement(String elementFilePath) throws IOException {
+    public static LinkedHashMap<String, String> extractFeaturesFromSingleElement(String elementFilePath) throws IOException, InvalidFormatException {
 
         LinkedHashMap<String, String> features = new LinkedHashMap<>();
         HashMap<String, String> featuresHashMap = MetaDataExtractor(elementFilePath);
@@ -90,12 +131,55 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
 
         }
 
-        ArrayList<String> linkArray = getURLs(elementFilePath);
-        features.put("Number_Of_Urls",Integer.toString(linkArray.size()));
+        features.put("Number_Of_Urls",getURLsCount(elementFilePath));
 
-        //System.out.println(features.toString());
+        AtomList atoms = new AtomList(elementFilePath);
+        LinkedHashMap<String, Collection<Integer>> atomsAtomList = atoms.getAtomList();
 
-
+        features.put("alb_size",getAtomSize("ֲ©alb",atomsAtomList));
+        features.put("ART_size",getAtomSize("ֲ©ART",atomsAtomList));
+        features.put("cmt_size",getAtomSize("ֲ©cmt",atomsAtomList));
+        features.put("day_size",getAtomSize("ֲ©day",atomsAtomList));
+        features.put("nam_size",getAtomSize("ֲ©nam",atomsAtomList));
+        features.put("too_size",getAtomSize("ֲ©too",atomsAtomList));
+        features.put("wrt_size",getAtomSize("ֲ©wrt",atomsAtomList));
+        features.put("covr_size",getAtomSize("covr",atomsAtomList));
+        features.put("ctts_size",getAtomSize("ctts",atomsAtomList));
+        features.put("data_size",getAtomSize("data",atomsAtomList));
+        features.put("desc_size",getAtomSize("desc",atomsAtomList));
+        features.put("dinf_size",getAtomSize("dinf",atomsAtomList));
+        features.put("dref_size",getAtomSize("dref",atomsAtomList));
+        features.put("edts_size",getAtomSize("edts",atomsAtomList));
+        features.put("elst_size",getAtomSize("elst",atomsAtomList));
+        features.put("free_size",getAtomSize("free",atomsAtomList));
+        features.put("ftyp_size",getAtomSize("ftyp",atomsAtomList));
+        features.put("hdlr_size",getAtomSize("hdlr",atomsAtomList));
+        features.put("ilst_size",getAtomSize("ilst",atomsAtomList));
+        features.put("iods_size",getAtomSize("iods",atomsAtomList));
+        features.put("mdat_size",getAtomSize("mdat",atomsAtomList));
+        features.put("mdhd_size",getAtomSize("mdhd",atomsAtomList));
+        features.put("mdia_size",getAtomSize("mdia",atomsAtomList));
+        features.put("meta_size",getAtomSize("meta",atomsAtomList));
+        features.put("minf_size",getAtomSize("minf",atomsAtomList));
+        features.put("moov_size",getAtomSize("moov",atomsAtomList));
+        features.put("mvhd_size",getAtomSize("mvhd",atomsAtomList));
+        features.put("nled_size",getAtomSize("nled",atomsAtomList));
+        features.put("nmhd_size",getAtomSize("nmhd",atomsAtomList));
+        features.put("sbgp_size",getAtomSize("sbgp",atomsAtomList));
+        features.put("sdtp_size",getAtomSize("sdtp",atomsAtomList));
+        features.put("sgpd_size",getAtomSize("sgpd",atomsAtomList));
+        features.put("smhd_size",getAtomSize("smhd",atomsAtomList));
+        features.put("stbl_size",getAtomSize("stbl",atomsAtomList));
+        features.put("stco_size",getAtomSize("stco",atomsAtomList));
+        features.put("stsc_size",getAtomSize("stsc",atomsAtomList));
+        features.put("stsd_size",getAtomSize("stsd",atomsAtomList));
+        features.put("stss_size",getAtomSize("stss",atomsAtomList));
+        features.put("stsz_size",getAtomSize("stsz",atomsAtomList));
+        features.put("stts_size",getAtomSize("stts",atomsAtomList));
+        features.put("tkhd_size",getAtomSize("tkhd",atomsAtomList));
+        features.put("trak_size",getAtomSize("trak",atomsAtomList));
+        features.put("udta_size",getAtomSize("udta",atomsAtomList));
+        features.put("vmhd_size",getAtomSize("vmhd",atomsAtomList));
 
 
         //features.put(featuresName.Duration.toString(), someFunction());
@@ -113,6 +197,8 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
 
         HashMap<String, String> params = new HashMap<>();
 
+        params.put("file_size", getFileSize(elementFilePath));
+
         for (Directory directory : metadata.getDirectories()) {
             for (Tag tag : directory.getTags()) {
                 String name = (directory.getName()+"_"+tag.getTagName()).replace(" ","_").replace("-","_"); // temporary solution
@@ -127,7 +213,7 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
         return params;
     }
 
-    private static ArrayList<String> getURLs(String path) throws IOException {
+    private static String getURLsCount(String path) throws IOException {
 
         String input = convertFileTosTRING(path);
         LinkExtractor linkExtractor = LinkExtractor.builder()
@@ -142,8 +228,7 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
             String url = input.substring(start, end);
             linkArray.add(url);
         }
-
-        return linkArray;
+        return Integer.toString(linkArray.size());
     }
 
 
@@ -163,7 +248,17 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
         return text;
     }
 
+    private static String getAtomSize(String key, LinkedHashMap<String, Collection<Integer>> map){
+                if (map.containsKey(key)){
+                    Collection<Integer> c = map.get(key);
+                    return Collections.max(c).toString();
+                } else return "0";
+    }
 
+    private static String getFileSize(String path_to_file){
+         long size = new File(path_to_file).length();
+         return Long.toString(size);
+    }
     //</editor-fold>
     //@Override
         public ArrayList<String> getFeaturesHeaders() {

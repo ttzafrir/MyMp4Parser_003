@@ -31,6 +31,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 
 public class ContainerAtom extends Atom implements AtomParent {
     protected final ArrayList children = new ArrayList();
@@ -110,6 +112,17 @@ public class ContainerAtom extends Atom implements AtomParent {
             //result.append("/");
             ((Atom) children.get(i)).toStringType(bag, result);
         }
+        }
+
+    }
+    public void getAtomList(LinkedHashMap<String, Collection<Integer>> map) {
+        super.getAtomList(map);
+        if (children.size()==0){
+            return;
+        } else {
+            for (int i=0; i<children.size(); i++) {
+                ((Atom) children.get(i)).getAtomList(map);
+            }
         }
 
     }
