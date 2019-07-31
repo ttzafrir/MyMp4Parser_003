@@ -112,7 +112,7 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
     public FeatureExtractorFixedFeaturesKnowledgeBasedMp4() {
     } // Empty constructor
 
-
+    // Extract features from an MPEG-4 file according to the above Enum and returns a LinkedHashMap<String,String>
     public static LinkedHashMap<String, String> extractFeaturesFromSingleElement(String elementFilePath) throws IOException, InvalidFormatException {
 
         LinkedHashMap<String, String> features = new LinkedHashMap<>();
@@ -133,7 +133,8 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
 
         features.put("Number_Of_Urls",getURLsCount(elementFilePath));
 
-        AtomList atoms = new AtomList(elementFilePath);
+        AtomList atoms = new AtomList(elementFilePath); // Get file structure as an Atom tree
+        // Get a map of atoms names and sizes, duplicate atoms may accrue
         LinkedHashMap<String, Collection<Integer>> atomsAtomList = atoms.getAtomList();
 
         features.put("alb_size",getAtomSize("ֲ©alb",atomsAtomList));
@@ -188,7 +189,7 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
         //Use try-catch to protect the code
 
         return features;
-    }
+    } // End of extractFeaturesFromSingleElement method
 
     //<editor-fold desc="Extractor Methods">
     private static HashMap<String, String> MetaDataExtractor(String elementFilePath) throws IOException {
@@ -211,6 +212,11 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
             }*/
         }
         return params;
+    }
+
+    private static String getFileSize(String path_to_file){
+        long size = new File(path_to_file).length();
+        return Long.toString(size);
     }
 
     private static String getURLsCount(String path) throws IOException {
@@ -251,14 +257,11 @@ public class FeatureExtractorFixedFeaturesKnowledgeBasedMp4 {
     private static String getAtomSize(String key, LinkedHashMap<String, Collection<Integer>> map){
                 if (map.containsKey(key)){
                     Collection<Integer> c = map.get(key);
-                    return Collections.max(c).toString();
+                    return Collections.max(c).toString(); // In case of duplicate atom names, return max size
                 } else return "0";
     }
 
-    private static String getFileSize(String path_to_file){
-         long size = new File(path_to_file).length();
-         return Long.toString(size);
-    }
+
     //</editor-fold>
     //@Override
         public ArrayList<String> getFeaturesHeaders() {

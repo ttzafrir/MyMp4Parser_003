@@ -21,22 +21,24 @@ import java.util.stream.Stream;
 public class Program {
     public static void main(String[] args) throws IOException, InvalidFormatException {
         String path = "C:\\Users\\ttzaf\\Desktop\\Research\\benign\\bug.mp4";
+        /* Calling fixed feature extractor using file path*/
         FeatureExtractorFixedFeaturesKnowledgeBasedMp4 test = new FeatureExtractorFixedFeaturesKnowledgeBasedMp4();
         LinkedHashMap<String, String> FeatureMap = test.extractFeaturesFromSingleElement(path);
 
+        /* Print feature vector */
         for (String key : FeatureMap.keySet()) {
             System.out.println(key + " = " + FeatureMap.get(key));
         }
 
 
-  /*    AtomList atoms = new AtomList(path);
-        LinkedHashMap<String, Collection<Integer>> atomsAtomList = atoms.getAtomList();
-        System.out.println(atomsAtomList.toString());*/
 
-/*      String folderDir = "C:\\Users\\ttzaf\\Desktop\\Jupiter N Projects\\Research\\benign samples"; // Source folder
-        List<LinkedHashMap<String, String>> FeatureMapList = new ArrayList<>();
-        List<String> listOfDir = getFilesDir(folderDir);
+/*
+        // Convert a batch of files into
+        String folderDir = "C:\\Users\\ttzaf\\Desktop\\Jupiter N Projects\\Research\\benign samples"; // Source folder
+        List<LinkedHashMap<String, String>> FeatureMapList = new ArrayList<>(); \\list of feature maps
+        List<String> listOfDir = getFilesDir(folderDir); \\ get all directories in the source folder
 
+        // Loop over all directories and extract the relevant features into maps, finally create a list of maps
         for(String path : listOfDir) {
             FeatureExtractorFixedFeaturesKnowledgeBasedMp4 test = new FeatureExtractorFixedFeaturesKnowledgeBasedMp4();
             LinkedHashMap<String, String> FeatureMap = test.extractFeaturesFromSingleElement(path);
@@ -47,11 +49,66 @@ public class Program {
 
         //printElements(path);
 
-        *//*        Map<String, Integer> map = FeatureCountToMap(listOfDir);
+ */
+        /*map<String, Integer> map = FeatureCountToMap(listOfDir);
         System.out.println(map);
         SaveMapToCsv(map,"C:\\Users\\ttzaf\\Desktop\\FeaturesCount.csv");*/
     }
 
+    /*Create list of all directories in a folder*/
+    private static List<String> getFilesDir(String path) {
+        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+
+            List<String> result = walk.filter(Files::isRegularFile)
+                    .map(x -> x.toString()).collect(Collectors.toList());
+
+            //result.forEach(System.out::println);
+            return result;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /*Get feature names out of a file using metadata-extractor parser */
+    private static List<String> getFeaturesNames(String elementFilePath) throws IOException, ImageProcessingException {
+        List<String> FeatureList = new ArrayList<>();
+        InputStream file = new FileInputStream(elementFilePath);
+        Metadata metadata = Mp4MetadataReader.readMetadata(file);
+
+        for (Directory directory : metadata.getDirectories()) {
+            for (Tag tag : directory.getTags()) {
+                FeatureList.add(directory.getName()+"_"+tag.getTagName());
+            }
+/*            if (directory.hasErrors()) {
+                for (String error : directory.getErrors()) {
+                    System.err.format("ERROR: %s", error);
+                }
+            }*/
+        }
+        return FeatureList;
+    }
+    /*metadata-extractor parser metadata-extractor parser*/
+    private static void printElements(String elementFilePath) throws IOException, ImageProcessingException {
+        InputStream file = new FileInputStream(elementFilePath);
+        Metadata metadata = Mp4MetadataReader.readMetadata(file);
+
+        for (Directory directory : metadata.getDirectories()) {
+            for (Tag tag : directory.getTags()) {
+                System.out.format("[%s] - %s = %s",
+                        directory.getName(), tag.getTagName(), tag.getDescription());
+                System.out.println();
+            }
+            if (directory.hasErrors()) {
+                for (String error : directory.getErrors()) {
+                    System.err.format("ERROR: %s", error);
+                }
+            }
+        }
+    }
+
+    /*Count the number of String objects in a list and returns a map with the count for each unique object*/
     private static Map<String, Integer>  FeatureCountToMap(List<String> listOfDir) throws IOException, ImageProcessingException {
         Map<String, Integer> map = new HashMap<String, Integer>();
 
@@ -87,56 +144,6 @@ public class Program {
         }
     }
 
-
-    private static List<String> getFilesDir(String path) {
-        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
-
-            List<String> result = walk.filter(Files::isRegularFile)
-                    .map(x -> x.toString()).collect(Collectors.toList());
-
-            //result.forEach(System.out::println);
-            return result;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static List<String> getFeaturesNames(String elementFilePath) throws IOException, ImageProcessingException {
-        List<String> FeatureList = new ArrayList<>();
-        InputStream file = new FileInputStream(elementFilePath);
-        Metadata metadata = Mp4MetadataReader.readMetadata(file);
-
-        for (Directory directory : metadata.getDirectories()) {
-            for (Tag tag : directory.getTags()) {
-                FeatureList.add(directory.getName()+"_"+tag.getTagName());
-            }
-/*            if (directory.hasErrors()) {
-                for (String error : directory.getErrors()) {
-                    System.err.format("ERROR: %s", error);
-                }
-            }*/
-        }
-        return FeatureList;
-    }
-    private static void printElements(String elementFilePath) throws IOException, ImageProcessingException {
-        InputStream file = new FileInputStream(elementFilePath);
-        Metadata metadata = Mp4MetadataReader.readMetadata(file);
-
-        for (Directory directory : metadata.getDirectories()) {
-            for (Tag tag : directory.getTags()) {
-                System.out.format("[%s] - %s = %s",
-                        directory.getName(), tag.getTagName(), tag.getDescription());
-                System.out.println();
-            }
-            if (directory.hasErrors()) {
-                for (String error : directory.getErrors()) {
-                    System.err.format("ERROR: %s", error);
-                }
-            }
-        }
-    }
 
 
 }
