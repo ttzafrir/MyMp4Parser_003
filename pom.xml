@@ -31,6 +31,11 @@
             <artifactId>guava</artifactId>
             <version>26.0-jre</version>
         </dependency>
+        <dependency>
+            <groupId>com.adobe.xmp</groupId>
+            <artifactId>xmpcore</artifactId>
+            <version>6.1.10</version>
+        </dependency>
     </dependencies>
     
 </project>
